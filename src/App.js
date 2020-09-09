@@ -3,12 +3,12 @@
  * @Author: a77321a
  * @Date: 2020-09-08 10:20:49
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2020-09-08 17:56:19
+ * @LastEditTime: 2020-09-09 09:45:20
  */
 import React from 'react';
 import { connect } from 'react-redux'
 function App (props) {
-  let value = this.props.value
+  let value = props.value
   return (
     <div className="App">
       {value}

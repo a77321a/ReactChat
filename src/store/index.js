@@ -3,12 +3,12 @@
  * @Author: a77321a
  * @Date: 2020-09-08 17:26:40
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2020-09-08 17:49:26
+ * @LastEditTime: 2020-09-11 18:06:40
  */
 import { createStore, applyMiddleware, compose } from 'redux'
 
 import thunk from 'redux-thunk'
-import reducer from './reducer'
+import reducer from './reducers'
 const composeEnhancer =
   typeof window === 'object' &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?

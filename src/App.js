@@ -3,39 +3,23 @@
  * @Author: a77321a
  * @Date: 2020-09-08 10:20:49
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2020-09-11 18:21:49
+ * @LastEditTime: 2020-09-14 17:49:43
  */
 import React from 'react';
 import { connect } from 'react-redux'
-const add = () => ({
-  type: 'add'
-})
-const desc = () => ({
-  type: 'desc'
-})
+import { Redirect } from 'react-router'
 @connect(
-  state => ({ value: state.counter.value }),
-  { add, desc }
+  state => ({ isLogin: state.auth.isLogin }),
 )
 class App extends React.Component {
-  constructor(props) {
-    super(props)
-  }
   render () {
-    console.log(this.props)
-    let value = this.props.value
     return (
       <div className="App">
-        {value}
-        <button onClick={this.props.add}>加</button>
-        <button onClick={this.props.desc}>减</button>
+        {this.props.isLogin ? null : <Redirect to='/login'></Redirect>}
+        {this.props.children}
       </div>
     );
   }
-}
-
-const mapStateToProps = (state) => {
-  return { value: state.value }
 }
 
 

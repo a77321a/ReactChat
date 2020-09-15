@@ -1,185 +1,122 @@
 
-import axios from 'axios'
-import { Toast } from 'antd-mobile';
-// 全局定义loading
-let loading
-function startLoading () {
-  Toast.loading('Loading...');
-}
-function endLoading () {
-  Toast.hide()
-}
-// 一段时间内的请求共用一个loading
-let needLoadingRequestCount = 0
-export function showFullScreenLoading () {
-  if (needLoadingRequestCount === 0) {
-    startLoading()
-  }
-  needLoadingRequestCount++
-}
-export function tryHideFullScreenLoading () {
-  if (needLoadingRequestCount <= 0) return
-  needLoadingRequestCount--
-  if (needLoadingRequestCount === 0) {
-    // 是否一段时间内共用一个loading
-    endLoading()
-  }
-}
-// 合并相同请求
-const requestList = []
-const CancelToken = axios.CancelToken
-let sources = {}
+import { Toast } from 'antd-mobile'
 
-// http request 拦截器
-axios.interceptors.request.use(
-  config => {
-    const request = JSON.stringify(config.url) + JSON.stringify(config.method) + JSON.stringify(config.data || '')
-    config.cancelToken = new CancelToken((cancel) => {
-      sources[request] = cancel
-    })
-    requestList.push(request)
-    if (config.loading) {
-      startLoading()
-    };
-    return config
-  }, err => {
-    return Promise.reject(err)
+const Http = function () { };
+Http.prototype.fetch = function (url, method, params = {}, fetchConfig = {}) {
+  Toast.loading()
+
+  url = 'http://lastsensen.zhouhaiyang.com/' + url;
+  fetchConfig.showLoading = fetchConfig.showLoading === undefined ? true : fetchConfig.showLoading;
+  if (this.beforeRequest) {
+    this.beforeRequest(fetchConfig);
   }
-)
-// http response 拦截器
-axios.interceptors.response.use(
-  (response) => {
-    const request = JSON.stringify(response.config.url) + JSON.stringify(response.config.method) + JSON.stringify(response.config.data || '')
-    requestList.splice(requestList.findIndex(item => item === request), 1)
-    if (loading) {
-      // tryHideFullScreenLoading()
-      endLoading()
-    };
-    if (response.data.code === 200) {
-      return response.data
+  let config = {
+    method: method,
+    mode: 'cors'
+  };
+  if (params instanceof FormData) {
+    config.body = params;
+  } else {
+    if (method == 'get' || method == 'head') {
+      if (url.indexOf('?') > 0) {
+        url += '&';
+      } else {
+        url += '?';
+      }
+      for (let key in params) {
+        let value = params[key]
+        if (typeof (value) == 'function' || value === undefined) {
+          continue;
+        }
+        // if (typeof (value) == 'function' || value === undefined) {
+        //     continue;
+        // }
+        // value = encodeURIComponent(params[key]);;
+
+        url += key + '=' + value + '&';
+      }
     } else {
-      Toast.info(response.data.msg, 1);
-      return response.data
+      let obj = {};
+      for (let key in params) {
+        let value = params[key];
+        if (typeof (value) == 'function' || value === undefined) {
+          continue;
+        }
+        obj[key] = value;
+      }
+      config.body = JSON.stringify(obj);
     }
-
-  },
-  (error) => {
-    if (loading !== undefined) {
-      loading.close()
-    };
-    requestList.length = 0
-    return Promise.reject(error)
   }
-)
+  config.headers = {
+    'Content-Type': params instanceof FormData ? 'multipart/form-data' : 'application/json',
+  };
+  if (sessionStorage.adminToken) {
 
-// 封装get方法
-
-function get (url, params = {}, loading = true) {
-  return new Promise((resolve, reject) => {
-    if (loading) startLoading()
-    axios.get(url, {
-      params: params,
-      loading,
-      headers: {
-        withCredentials: true,
-        Authorization: localStorage.token
+    config.headers.Authorization = 'Bearer ' + sessionStorage.adminToken;
+  }
+  return new Promise((resolve) => {
+    // debugger
+    fetch(url, config).then(async res => {
+      Toast.hide()
+      if (this.afterRequest) {
+        this.afterRequest(fetchConfig);
       }
-    })
-      .then(response => {
-        endLoading()
-        resolve(response.data)
-      })
-      .catch(err => {
-        endLoading()
-        reject(err)
-      })
-  })
-}
-
-// 封装post请求
-
-function post (url, data = {}, loading = false) {
-  return new Promise((resolve, reject) => {
-    axios.post(url, data, {
-      loading: loading,
-      xhrFields: { withCredentials: true },
-      headers: {
-        withCredentials: true,
-        Authorization: localStorage.token
+      if (res.status == 200) {
+        let data = await res.json();
+        if (data.code == 200) {
+          resolve(data.data || data);
+        }
+        else if (data.code == 501) {
+          console.log(data)
+          resolve(data.data || data);
+        }
+        else if (data.code == 203) {
+          resolve(data);
+        } else if (data.code == 205) {
+          if (this.onApiNotCreated) {
+            this.onApiNotCreated(data);
+          }
+        } else {
+          if (this.onApiError) {
+            this.onApiError(data);
+          }
+          if (fetchConfig.onError) {
+            fetchConfig.onError(data.msg);
+          } else {
+            //reject(data.msg);
+          }
+        }
       }
-    })
-      .then(response => {
-        resolve(response.data)
-      }, err => {
-        reject(err)
-      })
-  })
-}
-
-// 封装patch请求
-
-function patch (url, data = {}) {
-  return new Promise((resolve, reject) => {
-    axios.patch(url, data)
-      .then(response => {
-        resolve(response.data)
-      }, err => {
-        reject(err)
-      })
-  })
-}
-// 封装 formData 表单提交
-function postForm (url, formData, loading = true) {
-  return new Promise((resolve, reject) => {
-    axios.post(url, formData, {
-      timeout: 0,
-      loading,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: localStorage.token
+      else {
+        Toast.fail(res.status.toString())
+        // if (this.onApiError) {
+        //   this.onApiError({
+        //     code: res.status,
+        //     msg: res.status.toString()
+        //   });
+        // }
       }
-    })
-      .then(response => {
-        resolve(response.data)
-      }, err => {
-        reject(err)
-      })
-  })
-}
-// 封装put请求
-
-function put (url, data = {}) {
-  return new Promise((resolve, reject) => {
-    axios.put(url, data, {
-      headers: {
-        Authorization: localStorage.token
+      if (fetchConfig.onComplete) {
+        fetchConfig.onComplete();
       }
-    })
-      .then(response => {
-        resolve(response.data)
-      }, err => {
-        reject(err)
-      })
-  })
-}
-// 封装delete请求
+    });
+  });
+};
 
-function todelete (url, params = {}) {
-  return new Promise((resolve, reject) => {
-    axios.delete(url, { params: params })
-      .then(response => {
-        resolve(response.data)
-      }, err => {
-        reject(err)
-      })
-  })
-}
-axios.defaults.timeout = 0
-// axios.defaults.baseURL = 'http://118.31.13.116/api/'
+Http.prototype.get = function (url, params, config) {
+  return this.fetch(url, 'get', params, config);
+};
 
-axios.defaults.baseURL = 'http://hejinlong001.zhouhaiyang.com/'
+Http.prototype.post = function (url, params, config) {
+  return this.fetch(url, 'post', params, config);
+};
 
-axios.defaults.headers.Authorization = localStorage.token
-axios.defaults.headers['token'] = localStorage.token
+Http.prototype.put = function (url, params, config) {
+  return this.fetch(url, 'put', params, config);
+};
 
-export default { get, post, patch, put, todelete, postForm }
+Http.prototype.delete = function (url, params, config) {
+  return this.fetch(url, 'delete', params, config);
+};
+
+export default new Http();

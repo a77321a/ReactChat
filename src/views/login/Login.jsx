@@ -1,26 +1,76 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 import { login } from './api'
+import styled from 'styled-px2vw'
+import { SET_USER_INFO } from '../../store/actionCreators'
 
-@connect((state) => ({ isLogin: state.auth.isLogin }), { login })
+import { Button, InputItem } from 'antd-mobile'
+
+@connect((state) => ({ isLogin: state.auth.isLogin }))
 class Login extends Component {
   constructor(props) {
     super(props)
-
-    this.state = {}
+    this.state = {
+      username: '',
+      password: 123456,
+    }
   }
-
   componentDidMount() {}
-  handleLogin = () => {
-    this.props.login({ username: 'admin', password: 123456 })
+  handleLogin = async () => {
+    let user = await login()
+    const { dispatch } = this.props
+    dispatch(SET_USER_INFO(user))
+    console.log(this.props)
+    if (this.props.isLogin) {
+      this.props.history.push('/home')
+    }
   }
 
   render() {
     return (
-      <>
-        <button onClick={this.handleLogin}>登录</button>
-      </>
+      <LoginWrap>
+        <img
+          style={{
+            height: '200px',
+            width: '200px',
+            margin: '20px auto',
+            display: 'block',
+          }}
+          src=""
+          alt=""
+        />
+        <InputItem
+          type="phone"
+          placeholder="请输入手机号"
+          clear
+          onChange={(v) => {
+            this.setState({ username: v })
+          }}
+        ></InputItem>
+        <InputItem
+          type="password"
+          placeholder="请输入密码"
+          clear
+          onChange={(v) => {
+            this.setState({ password: v })
+          }}
+        ></InputItem>
+        <Button
+          onClick={this.handleLogin}
+          style={{ marginTop: '30px' }}
+          type="primary"
+        >
+          登录
+        </Button>
+      </LoginWrap>
     )
   }
 }
+
+const LoginWrap = styled.div`
+  margin: 0 64px;
+  line-height: 43px;
+`
+
 export default Login

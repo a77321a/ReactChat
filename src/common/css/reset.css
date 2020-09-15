@@ -76,8 +76,9 @@ video {
   background: transparent;
 }
 
+html,
 body {
-  line-height: 1;
+  background-color: #fff !important;
 }
 
 article,

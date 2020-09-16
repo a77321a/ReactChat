@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom'
 import { login } from './api'
 import styled from 'styled-px2vw'
 import { SET_USER_INFO } from '../../store/actionCreators'
-
+import logo from './sm-logo.png'
 import { Button, InputItem } from 'antd-mobile'
 
 @connect((state) => ({ isLogin: state.auth.isLogin }))
@@ -32,12 +32,12 @@ class Login extends Component {
       <LoginWrap>
         <img
           style={{
-            height: '200px',
-            width: '200px',
-            margin: '20px auto',
+            height: '160px',
+            width: '120px',
+            margin: '40px auto',
             display: 'block',
           }}
-          src=""
+          src={logo}
           alt=""
         />
         <InputItem

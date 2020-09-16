@@ -51,8 +51,21 @@ export default class Home extends Component {
         <List renderHeader={() => '今日新增'} className="my-list">
           {this.state.addData.map((v, k) => {
             return (
-              <Item multipleLine extra="extra content">
-                {v.title} <Brief>subtitle</Brief>
+              <Item
+                multipleLine
+                extra={v.isPrice ? v.count.toFixed(2) : v.count}
+              >
+                {v.title}
+                <Brief>
+                  较昨日：
+                  {v.num == 0 ? (
+                    '无变化'
+                  ) : v.num > 0 ? (
+                    <span style={{ color: 'red' }}>+{v.num}</span>
+                  ) : (
+                    <span style={{ color: 'green' }}>-{v.num}</span>
+                  )}
+                </Brief>
               </Item>
             )
           })}

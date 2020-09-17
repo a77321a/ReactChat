@@ -1,7 +1,25 @@
 import React, { Component } from 'react'
 import { getAddData, getAccumulateData } from './api'
 import DataCard from './card/DataCard'
-import { WhiteSpace } from 'antd-mobile'
+import FuncCard from './card/FuncCard.jsx'
+import { WhiteSpace, SegmentedControl } from 'antd-mobile'
+import styled from 'styled-components'
+
+const HomeWrap = styled.div`
+  .am-segment {
+    border-radius: 0;
+  }
+  .am-segment-item {
+    border-radius: 0 !important;
+    border: none;
+  }
+  .am-segment-item:first-child {
+    border-radius: 0 !important;
+  }
+  .am-segment-item:last-child {
+    border-radius: 0 !important;
+  }
+`
 
 export default class Home extends Component {
   constructor(props) {
@@ -10,6 +28,7 @@ export default class Home extends Component {
     this.state = {
       addData: [],
       AccumulateData: [],
+      type: '今日新增',
     }
   }
 
@@ -98,21 +117,37 @@ export default class Home extends Component {
       this.setState({ AccumulateData: data })
     })
   }
-
+  handleChangeSegment = (e) => {
+    console.log(e)
+  }
+  onValueChange = (val) => {
+    this.setState({ type: val })
+  }
   render() {
     return (
-      <>
+      <HomeWrap>
+        <FuncCard />
         <WhiteSpace size="lg" />
-
-        <DataCard
-          compare
-          key="add"
-          title="今日新增"
-          data={this.state.addData}
+        <SegmentedControl
+          values={['今日新增', '累计数据']}
+          onChange={this.onChange}
+          onValueChange={this.onValueChange}
         />
-        <WhiteSpace size="lg" />
-        <DataCard key="acc" title="累计数据" data={this.state.AccumulateData} />
-      </>
+        {this.state.type == '今日新增' ? (
+          <DataCard
+            compare
+            key="add"
+            title="今日新增"
+            data={this.state.addData}
+          />
+        ) : (
+          <DataCard
+            key="acc"
+            title="累计数据"
+            data={this.state.AccumulateData}
+          />
+        )}
+      </HomeWrap>
     )
   }
 }

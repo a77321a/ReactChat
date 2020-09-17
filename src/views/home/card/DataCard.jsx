@@ -7,7 +7,7 @@ export default class DataCard extends Component {
   render() {
     return (
       <div>
-        <List renderHeader={() => this.props.title} className="my-list">
+        <List className="my-list">
           {this.props.data.map((v, k) => {
             return (
               <Item

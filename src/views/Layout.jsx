@@ -30,7 +30,7 @@ class Layout extends Component {
     return (
       <>
         <NavBar mode="dark" icon={<Icon type="ellipsis" />}>
-          NavBar
+          管理后台
         </NavBar>
         {this.props.children}
       </>

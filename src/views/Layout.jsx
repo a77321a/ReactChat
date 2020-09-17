@@ -33,13 +33,6 @@ class Layout extends Component {
           NavBar
         </NavBar>
         {this.props.children}
-        {/* <Menu
-          className="foo-menu"
-          data={initData}
-          value={['1', '3']}
-          onChange={this.onChange}
-          height={document.documentElement.clientHeight * 0.6}
-        /> */}
       </>
     )
   }

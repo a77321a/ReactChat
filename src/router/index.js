@@ -3,7 +3,7 @@
  * @Author: a77321a
  * @Date: 2020-09-14 17:00:08
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2020-09-15 14:09:49
+ * @LastEditTime: 2020-09-17 18:14:51
  */
 import React from 'react'
 import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom'
@@ -17,7 +17,7 @@ import Layout from '../views/Layout.jsx'
 
 import Home from '../views/home/Home.jsx'
 import Login from '../views/login/Login.jsx'
-
+import CourseList from '../views/course/CourseList'
 
 
 const BasicRoute = (prop) => {
@@ -27,6 +27,8 @@ const BasicRoute = (prop) => {
         <Route title="登录" path="/login" component={Login}></Route>
         <Layout>
           <Route title="首页" path="/home" component={Home}></Route>
+          <Route title="课程列表" path="/course" component={CourseList}></Route>
+
         </Layout>
       </Switch>
     </App>
@@ -36,7 +38,6 @@ const BasicRoute = (prop) => {
       <Router>
         <Switch>
           <Route render={(props) => {
-            console.log(props)
             return AppRouter
           }}></Route>
         </Switch>

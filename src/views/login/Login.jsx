@@ -21,7 +21,6 @@ class Login extends Component {
     let user = await login()
     const { dispatch } = this.props
     dispatch(SET_USER_INFO(user))
-    console.log(this.props)
     if (this.props.isLogin) {
       this.props.history.push('/home')
     }

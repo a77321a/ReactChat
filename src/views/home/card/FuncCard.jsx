@@ -42,7 +42,7 @@ export default class FuncCard extends Component {
   }
   componentDidMount() {}
   handleItemClick = (val) => {
-    console.log(val)
+    this.props.handleItemClick(val)
   }
   render() {
     return (

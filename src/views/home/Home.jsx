@@ -66,7 +66,6 @@ export default class Home extends Component {
   }
   handleGetAccumulateData = () => {
     getAccumulateData().then((res) => {
-      console.log(res)
       let data = [
         {
           title: '订单金额',
@@ -117,16 +116,17 @@ export default class Home extends Component {
       this.setState({ AccumulateData: data })
     })
   }
-  handleChangeSegment = (e) => {
-    console.log(e)
-  }
+  handleChangeSegment = (e) => {}
   onValueChange = (val) => {
     this.setState({ type: val })
+  }
+  handleItemClick = (val) => {
+    this.props.history.push(val.routeName)
   }
   render() {
     return (
       <HomeWrap>
-        <FuncCard />
+        <FuncCard handleItemClick={this.handleItemClick} />
         <WhiteSpace size="lg" />
         <SegmentedControl
           values={['今日新增', '累计数据']}

@@ -20,7 +20,6 @@ class Layout extends Component {
     const { dispatch } = this.props
     if (this.props.menu.length == 0) {
       getMenu().then((res) => {
-        console.log(res)
         dispatch(SET_MENU(res.rows))
       })
     }
@@ -29,7 +28,11 @@ class Layout extends Component {
   render() {
     return (
       <>
-        <NavBar mode="dark" icon={<Icon type="ellipsis" />}>
+        <NavBar
+          style={{ position: 'sticky', top: 0, zIndex: 9 }}
+          mode="dark"
+          icon={<Icon type="ellipsis" />}
+        >
           管理后台
         </NavBar>
         {this.props.children}

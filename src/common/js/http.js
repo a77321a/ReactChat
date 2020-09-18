@@ -67,7 +67,6 @@ Http.prototype.fetch = function (url, method, params = {}, fetchConfig = {}) {
           resolve(data.data || data);
         }
         else if (data.code == 501) {
-          console.log(data)
           resolve(data.data || data);
         }
         else if (data.code == 203) {
